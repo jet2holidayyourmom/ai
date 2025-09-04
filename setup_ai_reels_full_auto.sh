@@ -1,32 +1,37 @@
 #!/bin/bash
-# ===================================================
-# Full AI Reels Automation Setup (Auto-ready version)
-# ===================================================
+# ================================================
+# GitHub Repo Full AI Reels Setup (One-Step)
+# ================================================
 
-echo "Starting full AI Reels Automation setup..."
+# Replace this with your repo URL
+REPO_URL="https://github.com/YOUR_USERNAME/ai-reels-automation.git"
 
-# Root project folder
-ROOT_DIR="ai-reels-automation"
-mkdir -p "$ROOT_DIR"
-cd "$ROOT_DIR" || exit
+# 1️⃣ Clone the repo (or use existing)
+git clone "$REPO_URL"
+REPO_NAME=$(basename "$REPO_URL" .git)
+cd "$REPO_NAME" || exit
 
-# 1️⃣ Create folder structure
-declare -a DIRS=(
-  "config"
-  "scripts"
-  "viewer/images"
-  "viewer/scripts"
-  ".github/workflows"
+# 2️⃣ Create folders and placeholder files
+declare -a FILES=(
+"config/config.yaml"
+"scripts/generate_reel.sh"
+"scripts/extract_anchors.sh"
+"viewer/index.html"
+"viewer/scripts/viewer.js"
+"README.md"
 )
-for dir in "${DIRS[@]}"; do
-  mkdir -p "$dir"
+
+for f in "${FILES[@]}"; do
+  # Create parent folders automatically
+  mkdir -p "$(dirname "$f")"
+  # Create file if it does not exist
+  if [ ! -f "$f" ]; then
+    touch "$f"
+  fi
 done
 
-# 2️⃣ Create config file with sample persona + account placeholders
+# 3️⃣ Add content to config/config.yaml
 cat > config/config.yaml <<EOL
-# ==============================
-# Add your accounts here
-# ==============================
 accounts:
   instagram:
     username: "your_instagram"
@@ -38,52 +43,39 @@ accounts:
     username: "your_fanvue"
     password: "your_password"
 
-# ==============================
-# Define your personas here
-# ==============================
 personas:
   test_persona:
     name: "Test Blonde"
     style: "Indoor casual, soft light"
-    # Path to generated reel
     reel_source: "scripts/test_persona_reel.mp4"
-    # Extracted anchor images
     anchor_images:
       - "viewer/images/test_persona_anchor1.png"
       - "viewer/images/test_persona_anchor2.png"
 EOL
 
-# 3️⃣ Generate Reel Script (with dummy Fal.ai API call)
+# 4️⃣ Add content to generate_reel.sh
 cat > scripts/generate_reel.sh <<'EOL'
 #!/bin/bash
 PERSONA="$1"
-echo "🔹 Generating AI reel for $PERSONA..."
-
-# Placeholder: Replace this with Fal.ai or other AI API call
+echo "Generating AI reel for $PERSONA..."
 REEL_PATH="scripts/${PERSONA}_reel.mp4"
 touch "$REEL_PATH"
-echo "✅ Dummy reel created at $REEL_PATH"
-
-# Optionally, automatically extract anchors from this reel
+echo "Dummy reel created at $REEL_PATH"
 ./extract_anchors.sh "$PERSONA"
 EOL
-chmod +x scripts/generate_reel.sh
 
-# 4️⃣ Extract Anchor Images Script
+# 5️⃣ Add content to extract_anchors.sh
 cat > scripts/extract_anchors.sh <<'EOL'
 #!/bin/bash
 PERSONA="$1"
-echo "🔹 Extracting anchor images for $PERSONA..."
-
+echo "Extracting anchor images for $PERSONA..."
 IMG1="viewer/images/${PERSONA}_anchor1.png"
 IMG2="viewer/images/${PERSONA}_anchor2.png"
-# Dummy files for testing
 touch "$IMG1" "$IMG2"
-echo "✅ Dummy anchor images created: $IMG1, $IMG2"
+echo "Dummy anchors created: $IMG1, $IMG2"
 EOL
-chmod +x scripts/extract_anchors.sh
 
-# 5️⃣ Viewer
+# 6️⃣ Add viewer files
 cat > viewer/index.html <<EOL
 <!DOCTYPE html>
 <html lang="en">
@@ -101,37 +93,35 @@ cat > viewer/index.html <<EOL
 EOL
 
 cat > viewer/scripts/viewer.js <<EOL
-console.log("Viewer loaded.");
-// Example: Load reels/images dynamically
-// Fetch persona info from config.yaml if needed
+console.log("Viewer loaded. Display reels and anchors here.");
 EOL
-chmod +x viewer/scripts/viewer.js
 
-# 6️⃣ README.md
+# 7️⃣ Add README.md
 cat > README.md <<EOL
-# AI Reels Automation (Full Auto-ready)
+# AI Reels Automation
 
 ## Usage
 
-1. Add your accounts and personas in config/config.yaml.
-2. Generate AI reel for a persona:
+1. Edit config/config.yaml with your accounts and personas.
+2. Generate AI reel:
    ./scripts/generate_reel.sh test_persona
-3. Anchors are automatically extracted after reel generation.
-4. Preview reels/images locally in viewer/index.html.
+3. Extract anchors (auto after generation):
+   ./scripts/extract_anchors.sh test_persona
+4. Preview:
+   Open viewer/index.html in browser.
 
-## Adding More Personas
-- Add a new persona in config/config.yaml
-- Run:
-  ./scripts/generate_reel.sh persona_name
-
-## Notes
-- Replace placeholder Fal.ai calls with real API integration.
-- Anchor images are extracted automatically.
+## Adding Personas
+- Add new persona in config/config.yaml
+- Run scripts with the persona name
 EOL
 
-# Make all scripts executable
+# 8️⃣ Make scripts executable
 chmod +x scripts/*.sh
 chmod +x viewer/scripts/*.js
 
-echo "✅ Setup complete! Edit config/config.yaml with your accounts and new personas."
-echo "Run './scripts/generate_reel.sh persona_name' to generate reels and anchor images."
+# 9️⃣ Commit everything to GitHub
+git add .
+git commit -m "Initial AI Reels project structure with test persona"
+git push origin main
+
+echo "✅ All done! Repo is ready with folders, files, and test persona."
